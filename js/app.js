@@ -1,4 +1,4 @@
-import { COMMUNITIES, questionsFor, CHECKIN_NUMERIC, CHECKIN_EXTRAS } from "./questions.js";
+import { COMMUNITIES, questionsFor, resolveLabel, hasChannelAndSkool, checkinQuestions } from "./questions.js";
 import { loadState, saveState, deleteAll, downloadJson, downloadText, emptyState } from "./db.js";
 import { generateReport, stageCopy, buildDesPreamble, icsReminder, YT_RANK, MEM_RANK, REV_RANK } from "./report.js";
 
@@ -45,13 +45,14 @@ function startQuestionnaire() {
   renderQuestion();
   show("screen-q");
 }
-function currentQuestions() { return questionsFor(draft.community); }
+function currentQuestions() { return questionsFor(draft.community, draft.answers); }
 function renderQuestion() {
   const qs = currentQuestions();
+  if (draft.step >= qs.length) draft.step = Math.max(0, qs.length - 1);
   const q = qs[draft.step];
   $("qProgressLabel").textContent = `Question ${draft.step + 1} of ${qs.length}`;
   $("qBar").style.width = `${Math.round((draft.step / qs.length) * 100)}%`;
-  $("qLabel").textContent = q.label;
+  $("qLabel").textContent = resolveLabel(q, draft.answers);
   const existing = draft.answers[q.id] || "";
   if (q.type === "choice") {
     $("qControl").innerHTML = `<div class="choice-grid">${q.options.map((o) => `<button class="choice ${existing === o ? "selected" : ""}" data-v="${encodeURIComponent(o)}">${o}</button>`).join("")}</div>`;
@@ -61,7 +62,7 @@ function renderQuestion() {
   } else if (q.type === "textarea") {
     $("qControl").innerHTML = `<textarea id="qInput" placeholder="${q.placeholder || ""}">${existing}</textarea>`;
   } else {
-    $("qControl").innerHTML = `<input id="qInput" type="text" placeholder="${q.placeholder || ""}" value="${existing.replaceAll('"', "&quot;")}">`;
+    $("qControl").innerHTML = `<input id="qInput" type="text" placeholder="${q.placeholder || ""}" value="${String(existing).replaceAll('"', "&quot;")}">`;
   }
   $("qBack").disabled = draft.step === 0;
 }
@@ -72,9 +73,13 @@ function captureCurrentAnswer() {
   return draft.answers[q.id];
 }
 function nextQuestion() {
+  const qs = currentQuestions();
+  const currentId = qs[draft.step]?.id;
   const val = captureCurrentAnswer();
   if (!val) return toast("Pick or type an answer to continue.");
-  if (draft.step < currentQuestions().length - 1) { draft.step += 1; renderQuestion(); }
+  const nextQs = currentQuestions();
+  const idx = Math.max(0, nextQs.findIndex((q) => q.id === currentId));
+  if (idx < nextQs.length - 1) { draft.step = idx + 1; renderQuestion(); }
   else finishFirstVisit();
 }
 function backQuestion() {
@@ -100,7 +105,7 @@ function finishFirstVisit() {
 }
 function renderSend(profile, report) {
   $("sendTitle").textContent = "Your report is ready to email";
-  $("sendBody").innerHTML = `<div class="sent"><strong>Nothing from the report is shown on this screen.</strong> It goes to ${profile.email}. On this device we keep your answers, stage and checklist only.</div><p class="lede">Stage assigned: <span class="pill">${report.stage}</span></p><label class="field"><input type="checkbox" id="copyDes"> Also send a copy to Des</label><p class="muted">Des will see your answers and report so he can give you personal help. Left unticked by default.</p>`;
+  $("sendBody").innerHTML = `<div class="sent"><strong>Nothing from the report is shown on this screen.</strong> It goes to ${profile.email}. On this device we keep your answers, stage and checklist only.</div><p class="lede">Stage assigned: <span class="pill">${report.stage}</span></p><label class="field"><input type="checkbox" id="copyDes" checked> Send Des a copy so he can help with these answers</label><p class="muted">Ticked by default. Untick if you only want the report in your own inbox. Des uses what you typed to give personal help.</p>`;
 }
 function mockSend() {
   const profile = activeProfile();
@@ -110,7 +115,7 @@ function mockSend() {
   const last = profile.reports[profile.reports.length - 1];
   if (last) { last.sentTo = profile.email; last.sentToDes = !!copyDes; last.sentAt = new Date().toISOString(); }
   persist();
-  $("confirmText").innerHTML = `<div class="sent"><strong>Mock send complete</strong> Would have emailed “${report.subjectMember}” to ${profile.email} via Brevo. ${copyDes ? `A copy would also go to hello@outsourcemycontent.com.` : "No copy to Des."}</div><p class="muted">Live Brevo is not wired in this MVP.</p>`;
+  $("confirmText").innerHTML = `<div class="sent"><strong>Mock send complete</strong> Would have emailed “${report.subjectMember}” to ${profile.email} via Brevo. ${copyDes ? "A copy would also go to hello@outsourcemycontent.com." : "No copy to Des."}</div><p class="muted">Live Brevo is not wired in this MVP.</p>`;
   show("screen-confirm");
 }
 function downloadLastEmail() {
@@ -156,6 +161,7 @@ function renderDashboard() {
       renderDashboard();
     };
   });
+  $("btnBook").classList.toggle("hidden", !hasChannelAndSkool(p.answers));
   show("screen-dash");
 }
 function startCheckin() {
@@ -163,37 +169,42 @@ function startCheckin() {
   renderCheckin();
   show("screen-checkin");
 }
-function checkinFields() {
-  const numeric = questionsFor(activeProfile().community).filter((q) => CHECKIN_NUMERIC.includes(q.id) || q.id === "offerReady" || q.id === "ytLinksToSkool");
-  return [...numeric, ...CHECKIN_EXTRAS];
-}
+function checkinFields() { return checkinQuestions(activeProfile().community, checkinDraft.answers); }
 function renderCheckin() {
   const fields = checkinFields();
+  if (checkinDraft.step >= fields.length) checkinDraft.step = Math.max(0, fields.length - 1);
   const q = fields[checkinDraft.step];
   $("cProgressLabel").textContent = `Check-in ${checkinDraft.step + 1} of ${fields.length}`;
   $("cBar").style.width = `${Math.round((checkinDraft.step / fields.length) * 100)}%`;
-  $("cLabel").textContent = q.label;
+  $("cLabel").textContent = resolveLabel(q, checkinDraft.answers);
   const existing = checkinDraft.answers[q.id] || "";
   if (q.type === "choice") {
     $("cControl").innerHTML = `<div class="choice-grid">${q.options.map((o) => `<button class="choice ${existing === o ? "selected" : ""}" data-v="${encodeURIComponent(o)}">${o}</button>`).join("")}</div>`;
     $("cControl").querySelectorAll(".choice").forEach((b) => {
       b.onclick = () => { checkinDraft.answers[q.id] = decodeURIComponent(b.dataset.v); renderCheckin(); };
     });
+  } else if (q.type === "textarea") {
+    $("cControl").innerHTML = `<textarea id="cInput" placeholder="${q.placeholder || ""}">${existing}</textarea>`;
   } else {
-    $("cControl").innerHTML = `<textarea id="cInput">${existing}</textarea>`;
+    $("cControl").innerHTML = `<input id="cInput" type="text" placeholder="${q.placeholder || ""}" value="${String(existing).replaceAll('"', "&quot;")}">`;
   }
   $("cBack").disabled = checkinDraft.step === 0;
 }
 function captureCheckin() {
+  const q = checkinFields()[checkinDraft.step];
   const input = $("cInput");
-  if (input) checkinDraft.answers[checkinFields()[checkinDraft.step].id] = input.value.trim();
-  return checkinDraft.answers[checkinFields()[checkinDraft.step].id];
+  if (input) checkinDraft.answers[q.id] = input.value.trim();
+  return checkinDraft.answers[q.id];
 }
 function nextCheckin() {
-  const q = checkinFields()[checkinDraft.step];
+  const fields = checkinFields();
+  const currentId = fields[checkinDraft.step]?.id;
+  const q = fields[checkinDraft.step];
   const val = captureCheckin();
   if (q.type === "choice" && !val) return toast("Choose an option.");
-  if (checkinDraft.step < checkinFields().length - 1) { checkinDraft.step += 1; renderCheckin(); }
+  const nextFields = checkinFields();
+  const idx = Math.max(0, nextFields.findIndex((item) => item.id === currentId));
+  if (idx < nextFields.length - 1) { checkinDraft.step = idx + 1; renderCheckin(); }
   else finishCheckin();
 }
 function backCheckin() {
@@ -219,7 +230,7 @@ function finishCheckin() {
 }
 function openSettings() {
   const p = activeProfile();
-  $("settingsBody").innerHTML = `<p class="lede">Data on this device only. Clearing the browser or switching phone will wipe it unless you download a backup.</p>${p ? `<p class="muted">Active profile: ${p.firstName} · ${COMMUNITIES[p.community].short} · ${p.email}</p>` : ""}`;
+  $("settingsBody").innerHTML = `<p class="lede">Data on this device only.</p>${p ? `<p class="muted">Active profile: ${p.firstName} · ${COMMUNITIES[p.community].short} · ${p.email}</p>` : ""}`;
   show("screen-settings");
 }
 function restoreFromFile(file) {

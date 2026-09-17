@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Community Kickstart Tracker</title>
-    <meta name="description" content="Personal kickstart plan for The Content Revenue Lab and YouTube For Skool. Answers stay on this device.">
     <link rel="stylesheet" href="css/styles.css">
   </head>
   <body>
@@ -48,7 +47,9 @@
         <button class="btn btn-ghost" id="skipSend">Continue without sending</button>
       </section>
       <section id="screen-confirm" class="screen">
-        <h2>Sent</h2>
+        <div id="glitter" class="glitter" aria-hidden="true"></div>
+        <h2 id="confirmTitle">Congratulations</h2>
+        <p class="lede" id="confirmLead">Your kickstart plan is ready.</p>
         <div id="confirmText"></div>
         <button class="btn btn-navy" id="goDash">Go to this week’s actions</button>
         <button class="btn btn-ghost" id="dlEmail">Download a copy of the email</button>
@@ -86,5 +87,6 @@
     </div>
     <div id="toast" class="toast" role="status"></div>
     <script type="module" src="js/app.js"></script>
+    <script src="js/glitter.js" defer></script>
   </body>
 </html>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Community Kickstart Tracker</title>
+    <meta name="description" content="Personal kickstart plan for The Content Revenue Lab and YouTube For Skool. Answers stay on this device.">
+    <link rel="stylesheet" href="css/styles.css">
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <p class="kicker">The Authority Engine</p>
+        <h1>Community Kickstart Tracker</h1>
+        <p>TCRL and YouTube For Skool · answers stay on this device</p>
+      </header>
+      <section id="screen-land" class="screen active">
+        <h2>Start your kickstart</h2>
+        <p class="lede">Under five minutes. You get a short plan by email, then come back to tick off the week and update progress.</p>
+        <label class="field">Which community are you in?</label>
+        <div id="communityChoices" class="choice-grid"></div>
+        <label class="field" for="firstName">First name</label>
+        <input id="firstName" type="text" autocomplete="given-name">
+        <label class="field" for="email">Email</label>
+        <input id="email" type="email" autocomplete="email" inputmode="email">
+        <p class="muted">Required. The report is emailed, not shown on screen.</p>
+        <div class="privacy">Your answers and progress stay on this device. Nothing is saved on our servers unless you choose to send your report to Des. Live email is mocked in this MVP.</div>
+        <button class="btn btn-primary" id="goStart">Start questionnaire</button>
+        <button class="btn btn-ghost" id="btnSettings" style="margin-top:8px;">Backup, restore or delete data</button>
+      </section>
+      <section id="screen-q" class="screen">
+        <div class="progress-wrap">
+          <div class="progress-meta"><span id="qProgressLabel">Question</span><span>Back anytime</span></div>
+          <div class="bar"><span id="qBar"></span></div>
+        </div>
+        <h2 id="qLabel">Question</h2>
+        <div id="qControl"></div>
+        <div class="row-btns">
+          <button class="btn btn-ghost" id="qBack">Back</button>
+          <button class="btn btn-primary" id="qNext">Continue</button>
+        </div>
+      </section>
+      <section id="screen-send" class="screen">
+        <h2 id="sendTitle">Send report</h2>
+        <div id="sendBody"></div>
+        <button class="btn btn-primary" id="sendNow">Email this report to me</button>
+        <button class="btn btn-ghost" id="skipSend">Skip email and go to dashboard</button>
+        <p class="muted">PDF and live Brevo come in a later build. This MVP stores the email on the device so you can download the file.</p>
+      </section>
+      <section id="screen-confirm" class="screen">
+        <h2>Sent</h2>
+        <div id="confirmText"></div>
+        <button class="btn btn-navy" id="goDash">Go to dashboard</button>
+        <button class="btn btn-ghost" id="dlEmail">Download what we would have emailed</button>
+      </section>
+      <section id="screen-dash" class="screen">
+        <div class="profile-switch" id="dashSwitch"></div>
+        <div id="dashMain"></div>
+        <button class="btn btn-primary" id="btnCheckin">Update my progress</button>
+        <button class="btn btn-ghost" id="btnBook">Book a Roadblock Call</button>
+        <button class="btn btn-ghost" id="btnIcs">Add a 14-day reminder to my calendar</button>
+        <button class="btn btn-ghost" id="btnSettingsDash">Backup, restore or delete data</button>
+      </section>
+      <section id="screen-checkin" class="screen">
+        <div class="progress-wrap">
+          <div class="progress-meta"><span id="cProgressLabel">Check-in</span><span>Change only what moved</span></div>
+          <div class="bar"><span id="cBar"></span></div>
+        </div>
+        <h2 id="cLabel">Check-in</h2>
+        <div id="cControl"></div>
+        <div class="row-btns">
+          <button class="btn btn-ghost" id="cBack">Back</button>
+          <button class="btn btn-primary" id="cNext">Continue</button>
+        </div>
+      </section>
+      <section id="screen-settings" class="screen">
+        <h2>Your data</h2>
+        <div id="settingsBody"></div>
+        <button class="btn btn-navy" id="btnBackup">Download my data</button>
+        <label class="field" for="restoreFile">Restore from backup</label>
+        <input id="restoreFile" type="file" accept="application/json">
+        <div class="confirm-box">Delete all my data removes answers, reports and checklists from this browser only.</div>
+        <button class="btn btn-ghost" id="btnDelete">Delete all my data</button>
+        <button class="btn btn-ghost" id="btnBackDash">Back to dashboard</button>
+      </section>
+      <footer class="tiny">Des Dreckett · The Authority Engine · kickstart.theauthorityengine.org</footer>
+    </div>
+    <div id="toast" class="toast" role="status"></div>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

@@ -1,2 +1,3 @@
-# community-kickstart-tracker
-Mock MVP of Community Kickstart Tracker for TCRL and YouTube For Skool
+# Community Kickstart Tracker
+Mock MVP for TCRL and YouTube For Skool.
+Open index.html via any static host.

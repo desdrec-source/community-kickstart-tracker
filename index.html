@@ -14,6 +14,7 @@
         <h1>Community Kickstart Tracker</h1>
         <p>TCRL and YouTube For Skool · answers stay on this device</p>
       </header>
+
       <section id="screen-land" class="screen active">
         <h2>Start your kickstart</h2>
         <p class="lede">Under five minutes. You get a short plan by email, then come back to tick off the week and update progress.</p>
@@ -28,6 +29,7 @@
         <button class="btn btn-primary" id="goStart">Start questionnaire</button>
         <button class="btn btn-ghost" id="btnSettings" style="margin-top:8px;">Backup, restore or delete data</button>
       </section>
+
       <section id="screen-q" class="screen">
         <div class="progress-wrap">
           <div class="progress-meta"><span id="qProgressLabel">Question</span><span>Back anytime</span></div>
@@ -40,27 +42,29 @@
           <button class="btn btn-primary" id="qNext">Continue</button>
         </div>
       </section>
+
       <section id="screen-send" class="screen">
         <h2 id="sendTitle">Send report</h2>
         <div id="sendBody"></div>
         <button class="btn btn-primary" id="sendNow">Email this report to me</button>
-        <button class="btn btn-ghost" id="skipSend">Skip email and go to dashboard</button>
-        <p class="muted">PDF and live Brevo come in a later build. This MVP stores the email on the device so you can download the file.</p>
+        <button class="btn btn-ghost" id="skipSend">Continue without sending</button>
       </section>
+
       <section id="screen-confirm" class="screen">
         <h2>Sent</h2>
         <div id="confirmText"></div>
-        <button class="btn btn-navy" id="goDash">Go to dashboard</button>
-        <button class="btn btn-ghost" id="dlEmail">Download what we would have emailed</button>
+        <button class="btn btn-navy" id="goDash">Go to this week’s actions</button>
+        <button class="btn btn-ghost" id="dlEmail">Download a copy of the email</button>
       </section>
+
       <section id="screen-dash" class="screen">
         <div class="profile-switch" id="dashSwitch"></div>
         <div id="dashMain"></div>
         <button class="btn btn-primary" id="btnCheckin">Update my progress</button>
         <button class="btn btn-ghost" id="btnBook">Book a Roadblock Call</button>
-        <button class="btn btn-ghost" id="btnIcs">Add a 14-day reminder to my calendar</button>
-        <button class="btn btn-ghost" id="btnSettingsDash">Backup, restore or delete data</button>
+        <button class="btn btn-ghost" id="btnSettingsDash">Backup or delete data</button>
       </section>
+
       <section id="screen-checkin" class="screen">
         <div class="progress-wrap">
           <div class="progress-meta"><span id="cProgressLabel">Check-in</span><span>Change only what moved</span></div>
@@ -73,6 +77,7 @@
           <button class="btn btn-primary" id="cNext">Continue</button>
         </div>
       </section>
+
       <section id="screen-settings" class="screen">
         <h2>Your data</h2>
         <div id="settingsBody"></div>
@@ -83,6 +88,7 @@
         <button class="btn btn-ghost" id="btnDelete">Delete all my data</button>
         <button class="btn btn-ghost" id="btnBackDash">Back to dashboard</button>
       </section>
+
       <footer class="tiny">Des Dreckett · The Authority Engine · kickstart.theauthorityengine.org</footer>
     </div>
     <div id="toast" class="toast" role="status"></div>
